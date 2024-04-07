@@ -1,0 +1,108 @@
+(venv) PS C:\Users\kolup\pythonProject_News_Portal\News_Portal> python manage.py shell
+Python 3.8.10 (tags/v3.8.10:3d8993a, May  3 2021, 11:48:03) [MSC v.1928 64 bit (AMD64)] on win32
+Type "help", "copyright", "credits" or "license" for more information.
+(InteractiveConsole)
+
+# Импорт необходимых моделей и функций
+>>> from News.models import *
+
+1) Создание пользователей
+>>> user1 = User.objects.create_user('user1')
+>>> user2 = User.objects.create_user('user2')
+
+2) Создание объектов модели Author
+>>> author1 = Author.objects.create(user=user1, rating=0)
+>>> author2 = Author.objects.create(user=user2, rating=0)
+
+3) Добавление категорий
+>>> category1 = Category.objects.create(name='Спорт')
+>>> category2 = Category.objects.create(name='Политика')
+>>> category3 = Category.objects.create(name='Образование')
+>>> category4 = Category.objects.create(name='Наука')
+
+4) Создание статей и новостей
+>>> post1 = Post.objects.create(author=author1, post_type='article', title='Заголовок статьи 1', content='Текст статьи 1')
+
+>>> post2 = Post.objects.create(author=author2, post_type='article', title='Заголовок статьи 2', content='Текст статьи 2')
+
+>>> post3 = Post.objects.create(author=author1, post_type='news', title='Заголовок новости 1', content='Текст новости 1')
+
+5) Присвоить категории статьям и новостям
+
+post1.categories.add(category1, category2)
+post2.categories.add(category3, category4)
+post3.categories.add(category1, category4)
+
+6) Создать как минимум 4 комментария к разным объектам модели Post (в каждом объекте должен быть как минимум один комментарий).
+
+comment1 = Comment.objects.create(post=post1, user=user1, text='Комментарий к статье 1')
+comment2 = Comment.objects.create(post=post2, user=user2, text='Комментарий к статье 2')
+comment3 = Comment.objects.create(post=post3, user=user1, text='Комментарий к новости 1')
+comment4 = Comment.objects.create(post=post1, user=user2, text='Еще один комментарий к статье 1')
+
+
+
+7) Применяя функции like() и dislike() к статьям/новостям и комментариям, скорректировать рейтинги этих объектов.
+
+post1.rating += 1  # Увеличение рейтинга статьи
+post1.save()
+post1.like()       # Увеличение рейтинга статьи
+post1.dislike()    # Уменьшение рейтинга статьи
+
+post2.like()       # Увеличение рейтинга статьи
+post2.dislike()    # Уменьшение рейтинга статьи
+
+post3.rating += 2  # Увеличение рейтинга новости
+post3.save()
+post3.like()       # Увеличение рейтинга статьи
+post3.dislike()    # Уменьшение рейтинга статьи
+
+
+comment1.like()    # Увеличение рейтинга комментария
+comment2.dislike() # Уменьшение рейтинга комментария
+
+8) Обновить рейтинги пользователей.
+author1.update_rating()
+author2.update_rating()
+
+9) Вывести username и рейтинг лучшего пользователя (применяя сортировку и возвращая поля первого объекта).
+
+best_author = Author.objects.order_by('-rating').first()
+>>> print(f'Username лучшего пользователя: {best_author.user.username}, рейтинг: {best_author.rating}')
+Username лучшего пользователя: user2, рейтинг: 14
+
+>>> Author.objects.order_by("-rating").values("user__username", "rating")[0]
+{'user__username': 'user2', 'rating': 14}
+
+
+10) Вывести дату добавления, username автора, рейтинг, заголовок и превью лучшей статьи, основываясь на лайках/дислайках к этой статье.
+
+
+>>> best_post = Post.objects.order_by('-rating').first() # определение лучшей публикации
+>>> print(f'Дата добавления: {best_post.created_at}')
+Дата добавления: 2024-04-06 19:25:45.332119+00:00
+
+
+>>> best_post.preview() # вывод превью
+Превью: Текст статьи 1
+
+
+>>> Post.objects.order_by("-rating").values("created_at", "author__user__username", "rating", "title")[0]
+# вывод всего остального
+
+{'created_at': datetime.datetime(2024, 4, 6, 19, 25, 45, 332119, tzinfo=datetime.timezone.utc), 'author__user__username': 'user1', 'rating': 6, 'title': 'Заголовок статьи 1'}
+
+
+
+11. Вывести все комментарии (дата, пользователь, рейтинг, текст) к этой статье.
+
+>>> Comment.objects.filter(post=best_post).values("created_at", "user__username", "rating", "text")
+<QuerySet [{'created_at': datetime.datetime(2024, 4, 6, 19, 41, 33, 514099, tzinfo=datetime.timezone.utc), 'user__username': 'user1', 'rating': 1, 'text': 'Комментарий 
+к статье 1'}, {'created_at': datetime.datetime(2024, 4, 6, 19, 43, 17, 4574, tzinfo=datetime.timezone.utc), 'user__username': 'user2', 'rating': 1, 'text': 'Еще один комментарий к статье 1'}]>
+>>>
+
+
+
+
+
+
