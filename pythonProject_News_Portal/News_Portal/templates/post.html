@@ -1,0 +1,29 @@
+{% extends 'flatpages/default.html' %}
+
+{% load custom_filters %}  <!-- Загрузка файла с фильтрами, замените на ваше название -->
+
+{% block content %}
+{% if post %}
+<table>
+    <tr>
+        <td>Название</td>
+        <td>Дата публикации</td>
+        <td>Описание</td>
+        <td>Категория</td>
+    </tr>
+    <tr>
+        <td>{{ post.title|censor }}</td> <!-- Применение фильтра censor к заголовку -->
+        <td>{{ time_now|date:"d M Y" }}</td> <!-- Формат даты для каждой новости -->
+        <td>{{ post.content|censor }}</td> <!-- Применение фильтра censor к содержанию новости -->
+        <td>
+            {% for category in post.categories.all %}
+            {{ category.name }}
+            {% if not forloop.last %}, {% endif %}
+            {% endfor %}
+        </td>
+    </tr>
+</table>
+{% else %}
+<h2>Новостей нет!</h2>
+{% endif %}
+{% endblock content %}
