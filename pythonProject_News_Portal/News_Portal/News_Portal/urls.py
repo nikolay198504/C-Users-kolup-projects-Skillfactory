@@ -9,4 +9,5 @@ urlpatterns = [
     #path('posts/', include('News.urls')),
     path('news/', include('News.urls')),
 
+
 ]

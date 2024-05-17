@@ -1,0 +1,10 @@
+{% extends 'flatpages/default.html' %}
+
+{% block content %}
+  <h1>Выберите тип поста</h1>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit" name="post_type" value="article">Создать статью</button>
+    <button type="submit" name="post_type" value="news">Создать новость</button>
+  </form>
+{% endblock %}
