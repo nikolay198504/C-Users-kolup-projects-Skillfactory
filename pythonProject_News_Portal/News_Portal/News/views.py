@@ -12,6 +12,7 @@ from django.template import loader
 from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.urls import reverse
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 class PostsList(ListView):
     # Указываем модель, объекты которой мы будем выводить
@@ -149,7 +150,7 @@ class ArticleCreate(PermissionRequiredMixin, CreateView):
 
 
 
-class PostUpdate(UpdateView):
+class PostUpdate(LoginRequiredMixin, UpdateView):
     form_class = PostForm
     model = Post
     template_name = 'post_edit.html'
